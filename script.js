@@ -11,14 +11,20 @@ function lireMarkdown(texte) {
   let titre = null;
   const description = [];
   const tableau = [];
+  let derniereLigneTableau = -1;
 
-  for (const ligne of lignes) {
+  lignes.forEach((ligne, i) => {
     const l = ligne.trim();
-    if (!l) continue;
-    if (l.startsWith("|")) tableau.push(l);
-    else if (l.startsWith("# ") && !titre) titre = l.slice(2).trim();
+    if (!l) return;
+    if (l.startsWith("|")) {
+      tableau.push(l);
+      derniereLigneTableau = i;
+    } else if (l.startsWith("# ") && !titre) titre = l.slice(2).trim();
     else if (!tableau.length) description.push(l);
-  }
+  });
+
+  // Tout ce qui se trouve sous le tableau alimente la popup.
+  const popup = lignes.slice(derniereLigneTableau + 1).join("\n").trim();
 
   if (tableau.length < 2) throw new Error("Aucun tableau trouvé dans " + FICHIER);
 
@@ -46,7 +52,88 @@ function lireMarkdown(texte) {
     j.rang = i > 0 && j.score === joueurs[i - 1].score ? joueurs[i - 1].rang : i + 1;
   });
 
-  return { titre, description: description.join(" "), libelleScore: entetes[iScore] || "Points", joueurs };
+  return { titre, description: description.join(" "), libelleScore: entetes[iScore] || "Points", joueurs, popup };
+}
+
+// Convertit le texte en éléments DOM : **gras**, [texte](lien http/https). Pas de HTML brut.
+function inline(parent, texte) {
+  const re = /\*\*(.+?)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
+  let dernier = 0;
+  let m;
+  while ((m = re.exec(texte))) {
+    if (m.index > dernier) parent.append(texte.slice(dernier, m.index));
+    if (m[1] !== undefined) {
+      parent.append(el("strong", null, m[1]));
+    } else {
+      const a = el("a", null, m[2]);
+      a.href = m[3];
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      parent.append(a);
+    }
+    dernier = re.lastIndex;
+  }
+  if (dernier < texte.length) parent.append(texte.slice(dernier));
+}
+
+// Rendu minimal : ## / ### / #### titres, * listes, paragraphes.
+// Un paragraphe qui ne contient qu'un lien devient un bouton d'action.
+function rendreMarkdown(texte, conteneur) {
+  let liste = null;
+  let paragraphe = [];
+
+  const fermerParagraphe = () => {
+    if (!paragraphe.length) return;
+    const contenu = paragraphe.join(" ");
+    const seulLien = /^\[[^\]]+\]\(https?:\/\/[^)\s]+\)$/.test(contenu);
+    const p = el("p", seulLien ? "action" : null);
+    inline(p, contenu);
+    conteneur.append(p);
+    paragraphe = [];
+  };
+
+  for (const brute of texte.split(/\r?\n/)) {
+    const l = brute.trim();
+    const titre = l.match(/^(#{2,4})\s+(.*)$/);
+    const puce = l.match(/^[*-]\s+(.*)$/);
+
+    if (puce) {
+      fermerParagraphe();
+      if (!liste) {
+        liste = el("ul");
+        conteneur.append(liste);
+      }
+      const li = el("li");
+      inline(li, puce[1]);
+      liste.append(li);
+      continue;
+    }
+    liste = null;
+
+    if (titre) {
+      fermerParagraphe();
+      const h = el("h" + titre[1].length);
+      inline(h, titre[2]);
+      conteneur.append(h);
+    } else if (!l) fermerParagraphe();
+    else paragraphe.push(l);
+  }
+  fermerParagraphe();
+}
+
+function initPopup(texte) {
+  if (!texte) return;
+  const dialogue = document.getElementById("popup");
+  const contenu = document.getElementById("popup-contenu");
+  rendreMarkdown(texte, contenu);
+
+  document.getElementById("participer").hidden = false;
+  document.getElementById("ouvrir-popup").addEventListener("click", () => dialogue.showModal());
+  document.getElementById("fermer-popup").addEventListener("click", () => dialogue.close());
+  // Un clic sur le fond sombre (en dehors du contenu) ferme la popup.
+  dialogue.addEventListener("click", (e) => {
+    if (e.target === dialogue) dialogue.close();
+  });
 }
 
 function el(tag, classe, texte) {
@@ -92,7 +179,11 @@ fetch(`${FICHIER}?v=${Date.now()}`)
     if (!r.ok) throw new Error(`Impossible de charger ${FICHIER} (${r.status})`);
     return r.text();
   })
-  .then((texte) => afficher(lireMarkdown(texte)))
+  .then((texte) => {
+    const donnees = lireMarkdown(texte);
+    afficher(donnees);
+    initPopup(donnees.popup);
+  })
   .catch((err) => {
     const e = document.getElementById("erreur");
     e.textContent = err.message;

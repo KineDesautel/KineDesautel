@@ -16,8 +16,24 @@
     <section id="podium" aria-label="Podium"></section>
     <ol id="liste" aria-label="Classement complet"></ol>
 
+    <section id="participer" class="participer" hidden>
+      <h2>Participe à l'étude</h2>
+      <p>Un mémoire de kinésithérapie sur la force maximale du quadriceps. Une seule séance d'une heure, à l'EFOM.</p>
+      <ol class="etapes">
+        <li><strong>Inscris-toi</strong> sur un créneau libre.</li>
+        <li><strong>Viens à la séance</strong> : quelques contractions maximales sur un dynamomètre.</li>
+        <li><strong>Découvre ta force</strong> en newtons et ta place au classement.</li>
+      </ol>
+      <button id="ouvrir-popup" type="button" class="bouton">Je veux participer</button>
+    </section>
+
     <p id="erreur" hidden></p>
   </main>
+
+  <dialog id="popup" aria-label="Détails de la participation">
+    <button id="fermer-popup" type="button" class="fermer" aria-label="Fermer">×</button>
+    <div id="popup-contenu" class="popup-corps"></div>
+  </dialog>
 
   <script src="script.js"></script>
 </body>
