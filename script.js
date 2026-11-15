@@ -176,20 +176,53 @@ function afficher({ titre, description, libelleScore, libelleNom, unite, joueurs
     m.append(
       el("div", "medaille", MEDAILLES[j.rang - 1] || `#${j.rang}`),
       el("div", "nom", j.nom),
-      el("div", "points", unite ? `${j.scoreTexte} ${unite}` : j.scoreTexte)
+      el("div", "points", unite ? `${j.scoreTexte} ${unite}` : j.scoreTexte),
+      el("div", "socle", String(j.rang))
     );
     podium.append(m);
   });
 
   const liste = document.getElementById("liste");
-  joueurs.forEach((j) => {
+  const max = Math.max(...joueurs.map((j) => j.score), 1);
+  joueurs.forEach((j, i) => {
     const li = el("li");
+    // Jauge sous la ligne : force relative au meilleur score.
+    li.style.setProperty("--part", (j.score / max).toFixed(3));
+    li.style.setProperty("--i", i);
     const nom = el("div", "ligne-nom", j.nom);
     if (j.extras.length) nom.append(el("small", null, j.extras.join(" · ")));
-    li.append(el("span", "rang", j.rang), nom, el("span", "ligne-points", j.scoreTexte));
+    const points = el("span", "ligne-points", j.scoreTexte);
+    if (unite) points.append(el("small", null, unite));
+    li.append(el("span", "rang", j.rang), nom, points);
     liste.append(li);
   });
 }
+
+// Dernière ligne du classement : une place libre qui ouvre la popup d'inscription.
+function ajouterPlaceLibre() {
+  const dialogue = document.getElementById("popup");
+  const li = el("li", "libre");
+  const bouton = el("button", "place-libre");
+  bouton.type = "button";
+  bouton.append(el("span", "rang", "?"), el("span", "ligne-nom", "Ta place ici ?"), el("span", "fleche", "→"));
+  bouton.addEventListener("click", () => dialogue.showModal());
+  li.append(bouton);
+  document.getElementById("liste").append(li);
+}
+
+function initBandeau() {
+  const bandeau = document.querySelector(".bandeau");
+  const bouton = document.getElementById("pause-bandeau");
+  if (!bandeau || !bouton) return;
+  bouton.addEventListener("click", () => {
+    const enPause = bandeau.classList.toggle("en-pause");
+    bouton.setAttribute("aria-pressed", String(enPause));
+    bouton.textContent = enPause ? "▶" : "❚❚";
+    bouton.setAttribute("aria-label", enPause ? "Relancer le bandeau" : "Mettre le bandeau en pause");
+  });
+}
+
+initBandeau();
 
 // "?v=" + date évite que le navigateur garde une ancienne version du fichier en cache.
 fetch(`${FICHIER}?v=${Date.now()}`)
@@ -201,6 +234,7 @@ fetch(`${FICHIER}?v=${Date.now()}`)
     const donnees = lireMarkdown(texte);
     afficher(donnees);
     initPopup(donnees.popup);
+    if (donnees.popup) ajouterPlaceLibre();
   })
   .catch((err) => {
     const e = document.getElementById("erreur");
