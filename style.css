@@ -73,13 +73,28 @@ h1 { font-size: 2.25rem; margin: 0 0 8px; letter-spacing: -0.02em; }
 .marche .points { color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* Liste complète */
+.entete-liste {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.entete-liste span:last-child { text-align: right; }
+
 #liste {
   list-style: none;
   margin: 0;
   padding: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 0 0 12px 12px;
   overflow: hidden;
 }
 
@@ -102,45 +117,9 @@ h1 { font-size: 2.25rem; margin: 0 0 8px; letter-spacing: -0.02em; }
 .ligne-nom small { display: block; color: var(--muted); }
 .ligne-points { font-weight: 600; font-variant-numeric: tabular-nums; }
 
-/* Appel à participer */
-.participer {
-  margin-top: 48px;
-  padding: 24px 20px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  text-align: center;
-}
-.participer h2 { margin: 0 0 8px; font-size: 1.5rem; letter-spacing: -0.01em; }
-.participer p { margin: 0 0 16px; color: var(--muted); }
-
-.etapes {
-  list-style: none;
-  counter-reset: etape;
-  margin: 0 0 24px;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-  text-align: left;
-}
-.etapes li {
-  counter-increment: etape;
-  display: grid;
-  grid-template-columns: 2rem 1fr;
-  align-items: center;
-  gap: 12px;
-}
-.etapes li::before {
-  content: counter(etape);
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 700;
-}
+/* Bouton d'ouverture de la popup (sous le titre) */
+header .bouton { margin-top: 20px; }
+.bouton[hidden] { display: none; }
 
 .bouton,
 .popup-corps .action a {

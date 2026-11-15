@@ -2,15 +2,15 @@
 
 Mis à jour le 15 novembre 2026.
 
-| Nom     | Points |
-|---------|--------|
-| Alix   | 120    |
-| Bruno   | 95     |
-| Chloé   | 95     |
-| David   | 80     |
-| Emma    | 72     |
-| Félix   | 60     |
-| Gabriel | 41     |
+| Participant | Force maximale (N) |
+|-------------|--------------------|
+| Alix        | 620                |
+| Bruno       | 540                |
+| Chloé       | 540                |
+| David       | 480                |
+| Emma        | 455                |
+| Félix       | 410                |
+| Gabriel     | 360                |
 
 ## Participer à mon mémoire 🙏
 

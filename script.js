@@ -33,8 +33,11 @@ function lireMarkdown(texte) {
   const lignesDonnees = tableau.slice(2).map(cellules).filter((c) => c.some(Boolean));
 
   // Colonne utilisée pour trier : "Points" (ou "Score"), sinon la 2e colonne.
-  let iScore = entetes.findIndex((e) => /^(points?|score)$/i.test(e));
+  let iScore = entetes.findIndex((e) => /^(points?|score|force)/i.test(e));
   if (iScore === -1) iScore = 1;
+
+  // Unité : texte entre parenthèses dans l'en-tête, par exemple "Force maximale (N)" donne "N".
+  const unite = (entetes[iScore] || "").match(/\(([^)]+)\)/)?.[1] || "";
 
   const joueurs = lignesDonnees.map((c) => ({
     nom: c[0] || "",
@@ -52,7 +55,15 @@ function lireMarkdown(texte) {
     j.rang = i > 0 && j.score === joueurs[i - 1].score ? joueurs[i - 1].rang : i + 1;
   });
 
-  return { titre, description: description.join(" "), libelleScore: entetes[iScore] || "Points", joueurs, popup };
+  return {
+    titre,
+    description: description.join(" "),
+    libelleScore: entetes[iScore] || "Points",
+    libelleNom: entetes[0] || "Nom",
+    unite,
+    joueurs,
+    popup,
+  };
 }
 
 // Convertit le texte en éléments DOM : **gras**, [texte](lien http/https). Pas de HTML brut.
@@ -88,6 +99,8 @@ function rendreMarkdown(texte, conteneur) {
     const seulLien = /^\[[^\]]+\]\(https?:\/\/[^)\s]+\)$/.test(contenu);
     const p = el("p", seulLien ? "action" : null);
     inline(p, contenu);
+    // Le bouton d'inscription de la popup affiche toujours "Inscris-toi", quel que soit le texte du lien dans le .md.
+    if (seulLien) p.querySelector("a").textContent = "Inscris-toi";
     conteneur.append(p);
     paragraphe = [];
   };
@@ -127,8 +140,9 @@ function initPopup(texte) {
   const contenu = document.getElementById("popup-contenu");
   rendreMarkdown(texte, contenu);
 
-  document.getElementById("participer").hidden = false;
-  document.getElementById("ouvrir-popup").addEventListener("click", () => dialogue.showModal());
+  const ouvrir = document.getElementById("ouvrir-popup");
+  ouvrir.hidden = false;
+  ouvrir.addEventListener("click", () => dialogue.showModal());
   document.getElementById("fermer-popup").addEventListener("click", () => dialogue.close());
   // Un clic sur le fond sombre (en dehors du contenu) ferme la popup.
   dialogue.addEventListener("click", (e) => {
@@ -143,14 +157,16 @@ function el(tag, classe, texte) {
   return e;
 }
 
-function afficher({ titre, description, libelleScore, joueurs }) {
+function afficher({ titre, description, libelleScore, libelleNom, unite, joueurs }) {
   if (titre) {
     document.getElementById("titre").textContent = titre;
     document.title = titre;
   }
   document.getElementById("description").textContent = description;
 
-  const unite = libelleScore.toLowerCase();
+  // Ligne d'en-tête : explique chaque colonne de la liste.
+  const entete = document.getElementById("entete-liste");
+  entete.append(el("span", null, "Rang"), el("span", null, libelleNom), el("span", null, libelleScore));
 
   const podium = document.getElementById("podium");
   joueurs.slice(0, 3).forEach((j, i) => {
@@ -158,7 +174,7 @@ function afficher({ titre, description, libelleScore, joueurs }) {
     m.append(
       el("div", "medaille", MEDAILLES[j.rang - 1] || `#${j.rang}`),
       el("div", "nom", j.nom),
-      el("div", "points", `${j.scoreTexte} ${unite}`)
+      el("div", "points", unite ? `${j.scoreTexte} ${unite}` : j.scoreTexte)
     );
     podium.append(m);
   });
