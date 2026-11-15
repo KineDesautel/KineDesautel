@@ -4,8 +4,8 @@ Mis à jour le 15 novembre 2026.
 
 | Participant  |  Force maximale (N) |
 |--------------|---------------------|
-| Agathe       |  ?                  |
 | B****        |  ?                  |
+| Agathe       |  ?                  |
 | ma grand-mère|  1873               |
 | ?            |  ?                  |
 | ?            |  ?                  |
