@@ -171,13 +171,14 @@ function afficher({ titre, description, libelleScore, libelleNom, unite, joueurs
   entete.append(el("span", null, "Rang"), el("span", null, libelleNom), el("span", null, libelleScore));
 
   const podium = document.getElementById("podium");
+  // Médaille et marche suivent la place sur le podium (1re, 2e, 3e), même en cas d'égalité.
   joueurs.slice(0, 3).forEach((j, i) => {
     const m = el("div", `marche r${i + 1}`);
     m.append(
-      el("div", "medaille", MEDAILLES[j.rang - 1] || `#${j.rang}`),
+      el("div", "medaille", MEDAILLES[i]),
       el("div", "nom", j.nom),
       el("div", "points", unite ? `${j.scoreTexte} ${unite}` : j.scoreTexte),
-      el("div", "socle", String(j.rang))
+      el("div", "socle", String(i + 1))
     );
     podium.append(m);
   });
