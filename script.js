@@ -138,12 +138,14 @@ function initPopup(texte) {
   if (!texte) return;
   const dialogue = document.getElementById("popup");
   const contenu = document.getElementById("popup-contenu");
-  rendreMarkdown(texte, contenu);
+  if (contenu) rendreMarkdown(texte, contenu);
 
   const ouvrir = document.getElementById("ouvrir-popup");
+  const fermer = document.getElementById("fermer-popup");
+  if (!dialogue || !contenu || !ouvrir || !fermer) return;
   ouvrir.hidden = false;
   ouvrir.addEventListener("click", () => dialogue.showModal());
-  document.getElementById("fermer-popup").addEventListener("click", () => dialogue.close());
+  fermer.addEventListener("click", () => dialogue.close());
   // Un clic sur le fond sombre (en dehors du contenu) ferme la popup.
   dialogue.addEventListener("click", (e) => {
     if (e.target === dialogue) dialogue.close();
