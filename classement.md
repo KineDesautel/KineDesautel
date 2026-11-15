@@ -4,7 +4,7 @@ Mis à jour le 15 novembre 2026.
 
 | Nom     | Points |
 |---------|--------|
-| Alice   | 120    |
+| Alix   | 120    |
 | Bruno   | 95     |
 | Chloé   | 95     |
 | David   | 80     |
