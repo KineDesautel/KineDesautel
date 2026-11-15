@@ -1,16 +1,24 @@
-# Classement
+# Classement des quadri de l'EFOM
 
 Mis à jour le 15 novembre 2026.
 
 | Participant | Force maximale (N) |
 |-------------|--------------------|
-| Alix        | 620                |
-| Bruno       | 540                |
-| Chloé       | 540                |
-| David       | 480                |
-| Emma        | 455                |
-| Félix       | 410                |
-| Gabriel     | 360                |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+| ?           | ?                  |
+
 
 ## Participer à mon mémoire 🙏
 
