@@ -4,8 +4,8 @@ Mis à jour le 15 novembre 2026.
 
 | Participant  |  Force maximale (N) |
 |--------------|---------------------|
-| n°4867       |  59                  |
-| Agathe       |  ?                  |
+| n°4867       |  59                 |
+| Agathe       |  71                 |
 | ma grand-mère|  1873               |
 | ?            |  ?                  |
 | ?            |  ?                  |
